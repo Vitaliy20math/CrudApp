@@ -1,9 +1,8 @@
 package web.models;
 
 import javax.persistence.*;
-
-@Table(name = "users_tb")
 @Entity
+@Table(name = "users_tb")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

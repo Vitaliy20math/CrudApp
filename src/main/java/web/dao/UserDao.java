@@ -1,48 +1,50 @@
 package web.dao;
 
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.hibernate.collection.internal.PersistentList;
+import org.springframework.orm.jpa.vendor.EclipseLinkJpaDialect;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+import web.config.AppConfig;
 import web.models.User;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
 public class UserDao {
-    private int COUNT_ID;
-    private List<User> people;
+    @PersistenceContext
+    private EntityManager entityManager;
 
-    {
-     people = new ArrayList<>();
-     people.add(new User(++COUNT_ID, "Tom", "Hilfiger"));
-     people.add(new User(++COUNT_ID, "Vashirone", "Constantine"));
-     people.add(new User(++COUNT_ID, "Elena", "Furce"));
+
+    public List<User> listAllUsers() {
+        return entityManager.createQuery("from User", User.class).getResultList();
     }
-
-    public List<User> index() {
-        return people;
-    }
-
+    @Transactional
     public User getUser(int Id) {
-        return people.stream().filter(user -> user.getId() == Id).findAny().orElse(null);
+        return entityManager.find(User.class, Id);
     }
-
+    @Transactional
     public void save(User user) {
-        user.setId(++COUNT_ID);
-        people.add(user);
+        entityManager.persist(user);
+        entityManager.flush();
     }
-
-    public void update(int id, User user) {
-        User userById = getUser(id);
-        userById.setName(user.getName());
-        userById.setSurname(user.getSurname());
+    @Transactional
+    public void update(User user) {
+        entityManager.merge(user);
+        entityManager.flush();
     }
-
+    @Transactional
     public void delete(int id) {
-        people.removeIf(o->o.getId()==id);
+        User user = getUser(id);
+        entityManager.remove(user);
+        entityManager.flush();
     }
-
-
 
 }

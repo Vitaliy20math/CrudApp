@@ -20,18 +20,9 @@ public class UsersControllers {
     public UsersControllers(UserDao userDao) {
         this.userDao = userDao;
     }
-    @GetMapping(value = "/")
-    public String printWelcome(ModelMap model) {
-        List<String> messages = new ArrayList<>();
-        messages.add("Hello!");
-        messages.add("I'm CRUD application");
-        messages.add("0.0.1 version by feb'23 ");
-        model.addAttribute("messages", messages);
-        return "index";
-    }
     @GetMapping()
     public String index(Model model) {
-        model.addAttribute("users", userDao.index());
+        model.addAttribute("users", userDao.listAllUsers());
         return "pages/listUsers";
     }
     @GetMapping("/{id}")
@@ -55,8 +46,8 @@ public class UsersControllers {
         return "pages/edit";
     }
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute("user") User user, @PathVariable("id") int id) {
-        userDao.update(id, user);
+    public String update(@ModelAttribute("user") User user) {
+        userDao.update(user);
         return "redirect:/users/{id}";
     }
     @DeleteMapping("/{id}")
